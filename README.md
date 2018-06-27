@@ -1,7 +1,3 @@
-# 3D-Controller
-Controller Script fro Dodgeball Game in Unity.
-
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +16,8 @@ public class Controller3D : MonoBehaviour {
 	public float jumpSpeed = 10f;
 	private Vector3 velocity;
 	private float angle;
+
+	private bool wallCollision;
 
 	private bool canDodge;
 
@@ -47,14 +45,12 @@ public class Controller3D : MonoBehaviour {
 		// handle XY Input
 		move.x = Input.GetAxis("Horizontal");
 		move.z = Input.GetAxis("Vertical");
-
-		//TODO increase in Z means increase in Y as well
-
 		velocity.x = (move.x * xSpeed)/Time.deltaTime;
 		velocity.z = (move.z * zSpeed)/Time.deltaTime;
-		body.velocity = velocity;
 		angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg; 
-		body.transform.eulerAngles = new Vector3 (0f, 0f,angle); // TODO incorporate Z
+		body.velocity = velocity;
+		body.transform.eulerAngles = new Vector3 (0f, 0f,angle);
+
 
 		//handle Dodge/Jump Input
 		if (Input.GetButton ("Jump")) {
@@ -64,7 +60,7 @@ public class Controller3D : MonoBehaviour {
 
 			body.AddForce (new Vector3 (velocity.x * dodgeSpeed,0f,velocity.y * dodgeSpeed) );
 		}
-		print ("move = " + move);
+		// print ("move = " + move);
 
 	}
 
@@ -88,11 +84,16 @@ public class Controller3D : MonoBehaviour {
 		}
 	}
 
-	void OnCollisionEnter3D(Collision collision) {
-		
+	void OnCollisionEnter(Collision collision) {
+		print (collision);
 		if (collision.gameObject.tag == "Ball") {
 			print (" Ball collision! ");
 		}
-	}
-		
-}
+
+		if (collision.gameObject.tag == "Wall") {
+			wallCollision = true;
+			velocity = new Vector3 (0f, 0f, 0f);
+				}
+			}
+		}
+
